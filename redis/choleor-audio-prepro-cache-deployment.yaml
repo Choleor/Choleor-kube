@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: choleor-audio-prepro-cache
+  name: choleor-audio-prepro-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: choleor-audio-prepro-cache
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: choleor-audio-prepro-cache
+    spec:
+      containers:
+        - args:
+            - redis-server
+            - '--requirepass dkredisaudio'
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_PASSWORD
+                  name: redis-env
+          image: redis:6.0.9-alpine
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - redis-cli -h 127.0.0.1:6380 ping
+          #   failureThreshold: 5
+          #   periodSeconds: 3
+          #   timeoutSeconds: 1
+          name: choleor-audio-prepro-redis
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - mountPath: /data/
+              name: audio-cache-prepro-vol
+      restartPolicy: Always
+      volumes:
+        - name: audio-cache-prepro-vol
+          persistentVolumeClaim:
+            claimName: audio-cache-prepro-vol

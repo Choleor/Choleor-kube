@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: choleor-audio-server
+  name: choleor-audio-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: choleor-audio-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: choleor-audio-server
+    spec:
+      containers:
+        - args:
+            - bash
+            - -c
+            - python3 manage.py migrate && python3 manage.py runserver
+          image: starlover27/private_rep:audio-server
+          name: choleor-audio-server
+          ports:
+            - containerPort: 8000
+          imagePullPolicy: Always
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred

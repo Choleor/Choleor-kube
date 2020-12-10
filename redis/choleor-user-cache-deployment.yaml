@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: choleor-user-cache
+  name: choleor-user-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: choleor-user-cache
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/choleor-audio-net: "true"
+        io.kompose.service: choleor-user-cache
+    spec:
+      containers:
+        - args:
+            - redis-server
+            - '--requirepass dkredisaudio'
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: USER_REDIS_PASSWORD
+                  name: redis-env
+          image: redis:6.0.9-alpine
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - redis-cli -h 127.0.0.1:6380 ping
+          #   failureThreshold: 5
+          #   periodSeconds: 3
+          #   timeoutSeconds: 1
+          name: choleor-audio-user-redis
+          ports:
+            - containerPort: 6379
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/
+              name: audio-cache-user-vol
+      restartPolicy: Always
+      volumes:
+        - name: audio-cache-user-vol
+          persistentVolumeClaim:
+            claimName: audio-cache-user-vol

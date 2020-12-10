@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: choleor-choreo-server
+  name: choleor-choreo-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: choleor-choreo-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: choleor-choreo-server
+    spec:
+      containers:
+        - args:
+            - bash
+            - -c
+            - pwd && ls -al && cat requirements.txt && python3 manage.py migrate && python3 manage.py runserver
+          image: starlover27/private_rep:choreo-server
+          name: choleor-choreo-server
+          ports:
+            - containerPort: 8000
+          imagePullPolicy: Always
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred

@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: choleor-product-db
+  name: choleor-product-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: choleor-product-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: choleor-product-db
+    spec:
+      containers:
+        - args:
+            - "--character-set-server=utf8"
+            - "--collation-server=utf8_general_ci"
+            - "--skip-character-set-client-handshake"
+            - "--default-authentication-plugin=mysql_native_password"
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_DATABASE
+                  name: product-db-env
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_PASSWORD
+                  name: product-db-env
+            - name: MYSQL_ROOT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_ROOT_HOST
+                  name: product-db-env
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: product-db-env
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_USER
+                  name: product-db-env
+            - name: MYSQL_USER_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_USER_PASSWORD
+                  name: product-db-env
+          image: starlover27/private_rep:db-test
+          livenessProbe:
+            exec:
+              command:
+                - /usr/bin/mysql
+                - --user=django
+                - --password=dkmysqlproduct
+                - --execute=SHOW DATABASES
+            failureThreshold: 5
+            periodSeconds: 3
+            timeoutSeconds: 1
+          name: choleor-product-mysql
+          ports:
+            - containerPort: 3306
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d/
+              name: mysql-config-volume
+            - mountPath: /var/lib/mysql/
+              name: product-db-vol
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: product-db-vol
+          persistentVolumeClaim:
+            claimName: product-db-vol
+        - name: mysql-config-volume
+          configMap:
+            name: choleor-db-mysql-config

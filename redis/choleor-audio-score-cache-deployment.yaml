@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: choleor-audio-score-cache
+  name: choleor-audio-score-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: choleor-audio-score-cache
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: choleor-audio-score-cache
+    spec:
+      containers:
+        - args:
+            - redis-server
+            - '--requirepass dkredisaudio'
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_PASSWORD
+                  name: redis-env
+          image: redis:6.0.9-alpine
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - redis-cli -h 127.0.0.1:6380 ping
+          #   failureThreshold: 5
+          #   periodSeconds: 3
+          #   timeoutSeconds: 1
+          name: choleor-audio-score-redis
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - mountPath: /data/
+              name: audio-cache-score-vol
+      restartPolicy: Always
+      volumes:
+        - name: audio-cache-score-vol
+          persistentVolumeClaim:
+            claimName: audio-cache-score-vol

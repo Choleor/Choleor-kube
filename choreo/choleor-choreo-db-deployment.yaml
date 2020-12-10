@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: choleor-choreo-db
+  name: choleor-choreo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: choleor-choreo-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: choleor-choreo-db
+    spec:
+      containers:
+        - args:
+            - "--character-set-server=utf8"
+            - "--collation-server=utf8_general_ci"
+            - "--skip-character-set-client-handshake"
+            - "--default-authentication-plugin=mysql_native_password"
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_DATABASE
+                  name: choreo-db-env
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_PASSWORD
+                  name: choreo-db-env
+            - name: MYSQL_ROOT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_ROOT_HOST
+                  name: choreo-db-env
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: choreo-db-env
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_USER
+                  name: choreo-db-env
+            - name: MYSQL_USER_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_USER_PASSWORD
+                  name: choreo-db-env
+          image: starlover27/private_rep:db-test
+          livenessProbe:
+            exec:
+              command:
+                - /usr/bin/mysql
+                - --user=django
+                - --password=dkmysqlchoreo
+                - --execute=SHOW DATABASES
+            failureThreshold: 5
+            periodSeconds: 3
+            timeoutSeconds: 1
+          name: choleor-choreo-mysql
+          ports:
+            - containerPort: 3306
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d/
+              name: mysql-config-volume
+            - mountPath: /var/lib/mysql/
+              name: choreo-db-vol
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: choreo-db-vol
+          persistentVolumeClaim:
+            claimName: choreo-db-vol
+        - name: mysql-config-volume
+          configMap:
+            name: choleor-db-mysql-config

@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-gateway
+  # annotations:
+  #   nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  # defaultBackend:
+  #   resource:
+  #     apiGroup: k8s.example.com
+  #     kind: StorageBucket
+  #     name: static-assets
+  rules:
+  - host: localhost # ip말고 dns 주소 형태로 써야 함
+  - http:
+      paths:
+        - path: /audio
+          pathType: Prefix 
+          backend:
+            service:
+              name: choleor-audio-server
+              port:
+                number: 8081
+        - path: /choreo
+          pathType: Prefix
+          backend:
+            service:
+              name: choleor-choreo-server
+              port:
+                number: 8082
+        - path: /product
+          pathType: Prefix
+          backend:
+            service:
+              name: choleor-product-server
+              port:
+                number: 8083
+
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/cloud/deploy.yaml
+
+# kubectl create secret generic regcred \
+# --from-file=.dockerconfigjson=/home/jihee/.docker/config.json \
+# --type=kubernetes.io/dockerconfigjson
