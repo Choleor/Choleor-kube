@@ -11,7 +11,7 @@ spec:
   #     kind: StorageBucket
   #     name: static-assets
   rules:
-  - host: localhost # ip말고 dns 주소 형태로 써야 함
+          #host: localhost # ip말고 dns 주소 형태로 써야 함
   - http:
       paths:
         - path: /audio
