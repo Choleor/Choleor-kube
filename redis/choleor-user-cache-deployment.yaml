@@ -20,7 +20,6 @@ spec:
         kompose.cmd: kompose convert
         kompose.version: 1.22.0 (955b78124)
       labels:
-        io.kompose.network/choleor-audio-net: "true"
         io.kompose.service: choleor-user-cache
     spec:
       containers:

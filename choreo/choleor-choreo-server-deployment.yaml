@@ -26,7 +26,7 @@ spec:
         - args:
             - bash
             - -c
-            - pwd && ls -al && cat requirements.txt && python3 manage.py migrate && python3 manage.py runserver
+            - pwd && ls -al && cat requirements.txt && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000
           image: starlover27/private_rep:choreo-server
           name: choleor-choreo-server
           ports:

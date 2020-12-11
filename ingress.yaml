@@ -3,15 +3,16 @@ kind: Ingress
 metadata:
   name: api-gateway
   # annotations:
-  #   nginx.ingress.kubernetes.io/rewrite-target: /
+  #  nginx.ingress.kubernetes.io/rewrite-target: /
+
 spec:
-  # defaultBackend:
-  #   resource:
-  #     apiGroup: k8s.example.com
-  #     kind: StorageBucket
-  #     name: static-assets
+        #defaultBackend:
+        #resource:
+        # apiGroup: k8s.example.com
+        # kind: StorageBucket
+        #name: static-assets
   rules:
-          #host: localhost # ip말고 dns 주소 형태로 써야 함
+  - host: localhost  #ec2-54-180-179-124.ap-northeast-2.compute.amazonaws.com
   - http:
       paths:
         - path: /audio
@@ -20,21 +21,21 @@ spec:
             service:
               name: choleor-audio-server
               port:
-                number: 8081
+                number: 8001
         - path: /choreo
           pathType: Prefix
           backend:
             service:
               name: choleor-choreo-server
               port:
-                number: 8082
+                number: 8002
         - path: /product
           pathType: Prefix
           backend:
             service:
               name: choleor-product-server
               port:
-                number: 8083
+                number: 8003
 
 # kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/cloud/deploy.yaml
 
