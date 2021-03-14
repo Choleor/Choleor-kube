@@ -15,7 +15,7 @@ Choleor 서비스는 MSA를 도입하여 audio, choreo, product 총 3개의 서�
 - Design architecture
 - Support Kubernetes cluster handling
 
-## 👨‍⚕️ Collaborator
+## 👨‍⚕️ Contributor
 ### Junghun Yang
 - In charge of managing kubernetes cluster
 - Build Kubernetes Object
