@@ -3,7 +3,7 @@ Choleor cluster with kubernetes, microk8s
 
 ## Development Stack
 
-### 
+### Member
 #### Jihee Seon
 - Dockerize system
 - Monitor media handling performance
@@ -11,7 +11,7 @@ Choleor cluster with kubernetes, microk8s
 - Support Kubernetes cluster handling
 
 ### Collaborator
-#### Junghoon Yang
+#### Junghun Yang
 - In charge of managing kubernetes cluster
 - Build Kubernetes Object
 - Configure Nginx Ingress Controller
